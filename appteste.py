@@ -116,7 +116,7 @@ def executar_consulta(consulta, descricao="Resultado"):
 
 def menu():
     while True:
-        print("\n=== MENU PRINCIPAL ===")
+        print("\n=== MENU PRINCIPAL DO AEROPORTO ===")
         print("1. Carregar banco de dados")
         print("2. Listar passageiros com voo e companhia")
         print("3. Contar passageiros por companhia")
