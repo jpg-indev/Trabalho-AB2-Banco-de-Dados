@@ -52,7 +52,7 @@ FROM Passageiros p
 JOIN Aviao a ON p.numero_voo = a.numero_voo
 JOIN CompanhiaAerea c ON a.companhia_id = c.id;
 
---contar quantos passaageiros tem por qompanhia
+--contar quantos passaageiros tem por companhia
 
 SELECT c.nome AS companhia, COUNT(p.id) AS total_passageiros
 FROM Passageiros p
@@ -60,7 +60,7 @@ JOIN Aviao a ON p.numero_voo = a.numero_voo
 JOIN CompanhiaAerea c ON a.companhia_id = c.id
 GROUP BY c.nome;
 
---voo masi proximos e o mais de longe
+--voo mais proximos e o mais de longe
 
 SELECT MIN(data_viagem) AS primeira_viagem, MAX(data_viagem) AS ultima_viagem
 FROM Passagens;
