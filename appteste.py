@@ -1,12 +1,15 @@
 import sqlite3
 
-def carregar_banco(dadosvoos):
+def carregar_banco(dadosvoosatt):
     try:
         conexao = sqlite3.connect("banco_de_dados.db")
         cursor = conexao.cursor()
-        with open(dadosvoos, 'r', encoding='utf-8') as arquivo:
+        cursor.execute("PRAGMA foreign_keys = ON;")
+
+        with open(dadosvoosatt, 'r', encoding='utf-8') as arquivo:
             script_sql = arquivo.read()
             cursor.executescript(script_sql)
+
         conexao.commit()
         print("Banco de dados carregado com sucesso.")
     except sqlite3.Error as erro:
@@ -21,7 +24,7 @@ def listar_passageiros_voos():
     JOIN Aviao a ON p.numero_voo = a.numero_voo
     JOIN CompanhiaAerea c ON a.companhia_id = c.id;
     '''
-    executar_consulta(consulta, descricao="Passageiros e seus voos")
+    executar_consulta(consulta, "Passageiros e seus voos")
 
 def contar_passageiros_por_companhia():
     consulta = '''
@@ -31,7 +34,7 @@ def contar_passageiros_por_companhia():
     JOIN CompanhiaAerea c ON a.companhia_id = c.id
     GROUP BY c.nome;
     '''
-    executar_consulta(consulta, descricao="Passageiros por Companhia")
+    executar_consulta(consulta, "Passageiros por Companhia")
 
 def mostrar_voos_extremos():
     consulta = '''
@@ -41,6 +44,8 @@ def mostrar_voos_extremos():
     try:
         conexao = sqlite3.connect("banco_de_dados.db")
         cursor = conexao.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON;")
+
         cursor.execute(consulta)
         resultado = cursor.fetchone()
         print("\nDatas dos voos:")
@@ -51,10 +56,53 @@ def mostrar_voos_extremos():
     finally:
         conexao.close()
 
+def inserir_passageiro():
+    nome = input("Digite o nome do passageiro: ")
+    numero_voo = input("Digite o número do voo: ")
+
+    try:
+        conexao = sqlite3.connect("banco_de_dados.db")
+        cursor = conexao.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON;")
+
+        cursor.execute("SELECT COUNT(*) FROM Aviao WHERE numero_voo = ?", (numero_voo,))
+        if cursor.fetchone()[0] == 0:
+            print("Erro: o número do voo informado não existe.")
+            return
+
+        cursor.execute("INSERT INTO Passageiros (nome, numero_voo) VALUES (?, ?)", (nome, numero_voo))
+        conexao.commit()
+        print("Passageiro inserido com sucesso.")
+    except sqlite3.Error as erro:
+        print(f"Erro ao inserir passageiro: {erro}")
+    finally:
+        conexao.close()
+
+def deletar_passageiro():
+    nome = input("Digite o nome do passageiro a ser deletado: ")
+
+    try:
+        conexao = sqlite3.connect("banco_de_dados.db")
+        cursor = conexao.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON;")
+
+        cursor.execute("DELETE FROM Passageiros WHERE nome = ?", (nome,))
+        conexao.commit()
+        if cursor.rowcount > 0:
+            print("Passageiro deletado com sucesso.")
+        else:
+            print("Nenhum passageiro encontrado com esse nome.")
+    except sqlite3.Error as erro:
+        print(f"Erro ao deletar passageiro: {erro}")
+    finally:
+        conexao.close()
+
 def executar_consulta(consulta, descricao="Resultado"):
     try:
         conexao = sqlite3.connect("banco_de_dados.db")
         cursor = conexao.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON;")
+
         cursor.execute(consulta)
         resultados = cursor.fetchall()
 
@@ -73,7 +121,9 @@ def menu():
         print("2. Listar passageiros com voo e companhia")
         print("3. Contar passageiros por companhia")
         print("4. Mostrar voo mais próximo e mais distante")
-        print("5. Sair")
+        print("5. Inserir novo passageiro")
+        print("6. Deletar passageiro")
+        print("7. Sair")
 
         opcao = input("Escolha uma opção: ")
 
@@ -87,6 +137,10 @@ def menu():
         elif opcao == "4":
             mostrar_voos_extremos()
         elif opcao == "5":
+            inserir_passageiro()
+        elif opcao == "6":
+            deletar_passageiro()
+        elif opcao == "7":
             print("Encerrando...")
             break
         else:

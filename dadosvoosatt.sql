@@ -32,14 +32,14 @@ INSERT INTO CompanhiaAerea (nome) VALUES
 ('Azul');
 
 INSERT INTO Aviao (numero_voo, companhia_id) VALUES
-('LA1234', 1),
-('G3456', 2),
-('AZ7890', 3);
+('1234', 1),
+('3456', 2),
+('7890', 3);
 
 INSERT INTO Passageiros (nome, numero_voo) VALUES
-('João Paulo', 'LA1234'),
-('Oliveirax', 'G3456'),
-('Mariane', 'AZ7890');
+('João Paulo', '1234'),
+('Oliveirax', '3456'),
+('Mariane', '7890');
 
 INSERT INTO Passagens (passageiro_id, aviao_id, data_viagem) VALUES
 (1, 1, '2025-06-01'),
@@ -52,7 +52,7 @@ FROM Passageiros p
 JOIN Aviao a ON p.numero_voo = a.numero_voo
 JOIN CompanhiaAerea c ON a.companhia_id = c.id;
 
---contar quantos passaageiros tem por companhia
+--contar quantos passaageiros tem por qompanhia
 
 SELECT c.nome AS companhia, COUNT(p.id) AS total_passageiros
 FROM Passageiros p
@@ -60,7 +60,14 @@ JOIN Aviao a ON p.numero_voo = a.numero_voo
 JOIN CompanhiaAerea c ON a.companhia_id = c.id
 GROUP BY c.nome;
 
---voo mais proximos e o mais de longe
+--voo masi proximos e o mais de longe
 
 SELECT MIN(data_viagem) AS primeira_viagem, MAX(data_viagem) AS ultima_viagem
 FROM Passagens;
+
+INSERT INTO Passageiros (nome, numero_voo)
+VALUES ('Carlos Eduardo', '1234');
+
+DELETE FROM Passageiros
+WHERE nome = 'Carlos Eduardo';
+
